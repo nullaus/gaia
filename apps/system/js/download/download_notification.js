@@ -146,13 +146,20 @@ DownloadNotification.prototype = {
       if (ext && storagePath.indexOf(ext) === -1) {
         storagePath += '.' + ext;
         var moveReq = DownloadHelper.move(download,
-                                          download.storageName,
                                           storagePath);
         moveReq.onsuccess = function() {
-          var updateReq =
+          console.log('req.result =', req.result);
+
+        var updateReq =
             DownloadStore.update({ id: req.result,
-                                   storagePath: storagePath,
-                                   path: download.path + '.' + ext });
+                                   url: download.url,
+                                   path: download.path + '.' + ext,
+                                   contentType: download.contentType,
+                                   startTime: download.startTime,
+                                   finalizeTime: download.finalizeTime,
+                                   state: download.state,
+                                   storageName: download.storageName,
+                                   storagePath: storagePath });
           updateReq.onerror = function() {
             console.info('Failed to update download name in DownloadStore.');
           };

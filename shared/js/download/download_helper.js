@@ -389,14 +389,13 @@ var DownloadHelper = (function() {
   }
 
   /**
-   * Given a download, move it to the new storageName and storagePath
+   * Given a download, move it to the new storagePath
    * requested.
    *
    * @param{Object} It represents a DOMDownload object
-   * @param{String} Name of destination device storage (eg. 'sdcard')
    * @param{String} Path of destination device storage (eg. 'folder/file.ext')
    */
-  function move(download, newStorageName, newStoragePath) {
+  function move(download, newStoragePath) {
     var req = new Request();
 
     var blobReq = getBlob(download);
@@ -616,11 +615,10 @@ var DownloadHelper = (function() {
     remove: remove,
 
     /**
-     * Given a download, move it to the new storageName and storagePath
+     * Given a download, move it to the new storagePath
      * requested.
      *
      * @param{Object} It represents a DOMDownload object
-     * @param{String} Name of destination device storage (eg. 'sdcard')
      * @param{String} Path of destination device storage (eg. 'folder/file.ext')
      */
     move: move,

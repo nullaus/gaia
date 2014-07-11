@@ -296,6 +296,9 @@ var DownloadStore = (function() {
     datastore.add(downloadCooked).then(function(id) {
       // Enriched object with the id provided by the datastore
       downloadCooked.id = id;
+      // Return entry id.
+      req.result = id;
+      console.log('added download with id =', id);
       datastore.put(downloadCooked, id).then(defaultSuccess(req),
                                              defaultError(req));
     }, defaultError(req));
@@ -312,6 +315,8 @@ var DownloadStore = (function() {
   }
 
   function doUpdate(download, req) {
+    console.info('updating download with id =', download.id);
+    req.result = download.id;
     datastore.put(download, download.id).then(defaultSuccess(req),
                                               defaultError(req));
   }
