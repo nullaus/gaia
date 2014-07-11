@@ -311,6 +311,21 @@ var DownloadStore = (function() {
     return req;
   }
 
+  function doUpdate(download, req) {
+    datastore.put(download, download.id).then(defaultSuccess(req),
+                                              defaultError(req));
+  }
+
+  function update(download) {
+    var req = new Request();
+
+    window.setTimeout(function() {
+      init(doUpdate.bind(null, download, req), req.failed.bind(req));
+    });
+
+    return req;
+  }
+
   function doGetAll(req) {
     updateDownloadList().then(function() {
       datastore.get.apply(datastore, downloadList).then(defaultSuccess(req),
@@ -364,6 +379,13 @@ var DownloadStore = (function() {
      *
      */
     add: add,
+
+    /*
+     * It updates a download object with data specified.
+     *
+     * @param{Object} Object containing the fields to update.
+     */
+    update: update,
 
     /*
      * It removes a download object

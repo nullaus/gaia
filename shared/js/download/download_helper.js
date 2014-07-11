@@ -388,6 +388,33 @@ var DownloadHelper = (function() {
     return incompleteDownload ? req : doRemoveFromPhone(req, download);
   }
 
+  /**
+   * Given a download, move it to the new storageName and storagePath
+   * requested.
+   *
+   * @param{Object} It represents a DOMDownload object
+   * @param{String} Name of destination device storage (eg. 'sdcard')
+   * @param{String} Path of destination device storage (eg. 'folder/file.ext')
+   */
+  function move(download, newStorageName, newStoragePath) {
+    var req = new Request();
+
+    var blobReq = getBlob(download);
+    blobReq.onsuccess = function() {
+      var storage = getVolume(download.storageName);
+      var addReq = storage.addNamed(blobReq.result, newStoragePath);
+      addReq.onsuccess = function() {
+        var delReq = storage.delete(download.storagePath);
+        delReq.onsuccess = req.onsuccess;
+        delReq.onerror = req.onerror;
+      };
+      addReq.onerror = req.onerror;
+    };
+    blobReq.onerror = req.onerror;
+
+    return req;
+  }
+
   /*
    * Performs the proper delete of the physical file, also
    * from the datastore if the download has finished.
@@ -587,6 +614,16 @@ var DownloadHelper = (function() {
      * @param{Object} It represents a DOMDownload object
      */
     remove: remove,
+
+    /**
+     * Given a download, move it to the new storageName and storagePath
+     * requested.
+     *
+     * @param{Object} It represents a DOMDownload object
+     * @param{String} Name of destination device storage (eg. 'sdcard')
+     * @param{String} Path of destination device storage (eg. 'folder/file.ext')
+     */
+    move: move,
 
     /*
      * Returns exception code constants

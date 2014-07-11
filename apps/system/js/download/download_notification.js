@@ -140,6 +140,27 @@ DownloadNotification.prototype = {
         // all references to it from the Downloads API.
         mozDownloadManager.clearAllDone();
       }
+      // If we have no file extension, use the content-type header to add one.
+      var storagePath = download.storagePath;
+      var ext = MimeMapper.guessExtensionFromType(download.contentType);
+      if (ext && storagePath.indexOf(ext) === -1) {
+        storagePath += '.' + ext;
+        var moveReq = DownloadHelper.move(download,
+                                          download.storageName,
+                                          storagePath);
+        moveReq.onsuccess = function() {
+          var updateReq =
+            DownloadStore.update({ id: req.result,
+                                   storagePath: storagePath,
+                                   path: download.path + '.' + ext });
+          updateReq.onerror = function() {
+            console.info('Failed to update download name in DownloadStore.');
+          };
+        };
+        moveReq.onerror = function() {
+          console.info('Failed to add extension to download filename.');
+        };
+      }
       console.info('The download', download.id, 'was stored successfully:',
                     download.url);
     };
